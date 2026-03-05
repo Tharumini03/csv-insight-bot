@@ -20,6 +20,7 @@ from fastapi import Form
 
 UPLOAD_DIR = "app/storage/uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
+os.makedirs("app/storage/outputs", exist_ok=True)
 
 app = FastAPI()
 
