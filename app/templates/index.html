@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="grid lg:grid-cols-2 gap-10 items-start mt-6">
+
+  <!-- Left: Hero -->
+  <section class="rounded-3xl border border-white/10 bg-white/5 p-8">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/10 text-sm text-slate-200">
+      <span>⚡</span> Auto Schema • Cleaning • EDA • Model • Insight
+    </div>
+
+    <h1 class="mt-5 text-4xl font-extrabold tracking-tight">
+      Upload a CSV.<br>
+      Get a full AI-style analysis.
+    </h1>
+
+    <p class="mt-4 text-slate-300 leading-relaxed">
+      This site runs an <b>agentic pipeline</b> automatically:
+      detects schema, cleans missing values, generates plots, trains a baseline model,
+      and explains the results in simple language.
+    </p>
+
+    <!-- Steps -->
+    <div class="mt-7 grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
+      <div class="rounded-2xl bg-white/5 border border-white/10 p-4">
+        <div class="font-semibold">1) Upload</div>
+        <div class="text-slate-400 mt-1">CSV file</div>
+      </div>
+      <div class="rounded-2xl bg-white/5 border border-white/10 p-4">
+        <div class="font-semibold">2) Choose target</div>
+        <div class="text-slate-400 mt-1">What to predict</div>
+      </div>
+      <div class="rounded-2xl bg-white/5 border border-white/10 p-4">
+        <div class="font-semibold">3) Results</div>
+        <div class="text-slate-400 mt-1">Plots + score</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Right: Upload card -->
+  <section class="rounded-3xl border border-white/10 bg-white/5 p-8">
+    <h2 class="text-xl font-bold">Start a new analysis</h2>
+    <p class="text-slate-300 mt-2">Upload your CSV. Example: Titanic train.csv</p>
+
+    {% if error %}
+      <div class="mt-4 rounded-2xl border border-red-400/30 bg-red-500/10 p-4 text-red-200">
+        <b>Error:</b> {{ error }}
+      </div>
+    {% endif %}
+
+    <form class="mt-6" action="/upload" method="post" enctype="multipart/form-data">
+      <label class="block text-sm text-slate-300 mb-2">CSV file</label>
+
+      <div class="rounded-2xl border border-dashed border-white/20 bg-white/5 p-6">
+        <input
+          class="block w-full text-sm text-slate-200 file:mr-4 file:rounded-xl file:border-0 file:bg-indigo-500 file:px-4 file:py-2 file:text-white hover:file:bg-indigo-400"
+          type="file" name="file" accept=".csv" required>
+        <p class="text-xs text-slate-400 mt-3">
+          Tip: Export from Excel as CSV. Keep the first row as column names.
+        </p>
+      </div>
+
+      <button
+        class="mt-5 w-full rounded-2xl bg-indigo-500 hover:bg-indigo-400 px-5 py-3 font-semibold text-white shadow-lg shadow-indigo-500/20">
+        Upload & Continue →
+      </button>
+    </form>
+  </section>
+
+</div>
+
+{% endblock %}
