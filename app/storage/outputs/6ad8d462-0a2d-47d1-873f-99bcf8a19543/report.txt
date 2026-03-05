@@ -1,0 +1,30 @@
+CSV Insight Bot — Analysis Report
+--------------------------------
+Target column: Pclass
+
+Schema Summary
+- Rows: 891
+- Columns: 12
+- Total missing cells (raw): 866
+
+Cleaning Summary
+- Before: 891 rows, 12 cols
+- After:  891 rows, 12 cols
+- Missing after cleaning: 0
+
+Model Summary
+- Problem type: Classification
+- Model used: LogisticRegression
+- Metric: Accuracy
+- Score: 0.8380
+
+Top Features
+- (Not available)
+
+AI Insight
+The model achieved an accuracy of 0.838.
+
+The most important features influencing the prediction appear to be
+.
+
+This suggests these variables have the strongest relationship with the target outcome.

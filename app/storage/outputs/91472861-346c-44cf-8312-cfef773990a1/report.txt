@@ -1,0 +1,39 @@
+CSV Insight Bot — Analysis Report
+--------------------------------
+Target column: Survived
+
+Schema Summary
+- Rows: 891
+- Columns: 12
+- Total missing cells (raw): 866
+
+Cleaning Summary
+- Before: 891 rows, 12 cols
+- After:  891 rows, 12 cols
+- Missing after cleaning: 0
+
+Model Summary
+- Problem type: Classification
+- Model used: RandomForestClassifier
+- Metric: Accuracy
+- Score: 0.8101
+
+Top Features
+- Name_Zabour, Miss. Thamine: 0.1011
+- Name_de Messemaeker, Mrs. Guillaume Joseph (Emma): 0.0981
+- Embarked_S: 0.0574
+- Cabin_T: 0.0482
+- Cabin_F4: 0.0459
+- Cabin_G6: 0.0392
+- Cabin_B73: 0.0252
+- Embarked_C: 0.0200
+- Embarked_Q: 0.0148
+- Cabin_F38: 0.0088
+
+AI Insight
+The model achieved an accuracy of 0.81.
+
+The most important features influencing the prediction appear to be
+Name_Zabour, Miss. Thamine, Name_de Messemaeker, Mrs. Guillaume Joseph (Emma), Embarked_S.
+
+This suggests these variables have the strongest relationship with the target outcome.
