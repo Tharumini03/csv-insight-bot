@@ -10,23 +10,23 @@ from app.agents.insight_agent import generate_insight
 from app.agents.feature_plot_agent import plot_feature_importance
 from app.agents.report_download_agent import build_text_report
 from app.rag.build_knowledge import build_knowledge_file
-from fastapi.responses import PlainTextResponse
 
-from fastapi import FastAPI, Request, UploadFile, File
-from fastapi.responses import HTMLResponse
+from fastapi import FastAPI, Request, UploadFile, File, Form
+from fastapi.responses import HTMLResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from fastapi import Form
 
 
 UPLOAD_DIR = "app/storage/uploads"
+OUTPUT_DIR = "app/storage/outputs"
+
 os.makedirs(UPLOAD_DIR, exist_ok=True)
-os.makedirs("app/storage/outputs", exist_ok=True)
+os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
-app.mount("/outputs", StaticFiles(directory="app/storage/outputs"), name="outputs")
+app.mount("/outputs", StaticFiles(directory=OUTPUT_DIR), name="outputs")
 templates = Jinja2Templates(directory="app/templates")
 
 
@@ -37,7 +37,6 @@ def home(request: Request):
 
 @app.post("/upload", response_class=HTMLResponse)
 async def upload_csv(request: Request, file: UploadFile = File(...), step: int = 2):
-
     if not file.filename.endswith(".csv"):
         return templates.TemplateResponse(
             "index.html",
@@ -59,9 +58,11 @@ async def upload_csv(request: Request, file: UploadFile = File(...), step: int =
         {
             "request": request,
             "file_id": file_id,
-            "columns": columns
+            "columns": columns,
+            "step": step
         }
     )
+
 
 @app.post("/analyze", response_class=HTMLResponse)
 def analyze(
@@ -70,9 +71,8 @@ def analyze(
     target: str = Form(...),
     model_choice: str = Form("rf"),
     step: int = 3
-):    
+):
     csv_path = os.path.join(UPLOAD_DIR, f"{file_id}.csv")
-
     df = pd.read_csv(csv_path)
 
     # Agent 1: schema
@@ -80,51 +80,67 @@ def analyze(
 
     # Agent 2: cleaning
     cleaned_df, cleaning_report = basic_clean(df, target)
+
+    # Agent 3: EDA
     plots = run_eda(cleaned_df, target, file_id)
+
+    # Agent 4: model
     model_info = train_and_evaluate(cleaned_df, target, model_choice)
+
+    # Agent 5: insight
     insight = generate_insight(model_info)
 
-    # Create feature importance chart
-    fi_plot_path = plot_feature_importance(model_info.get("feature_importance", []), file_id)
+    # Feature importance chart
+    feature_importance = model_info.get("feature_importance", [])
+    fi_plot_path = plot_feature_importance(feature_importance, file_id)
 
-    # Build downloadable report text and store it in memory (simple way: pass via template + download route uses file_id)
+    # Build downloadable report text
     report_text = build_text_report(schema, cleaning_report, model_info, insight, target)
 
-    # Save report to file so download works reliably
-    report_path = f"app/storage/outputs/{file_id}/report.txt"
+    # Build RAG knowledge file
+    knowledge_path = build_knowledge_file(
+        file_id,
+        schema,
+        cleaning_report,
+        model_info,
+        feature_importance,
+        insight
+    )
+    print("Knowledge file created:", knowledge_path)
+
+    # Save report
+    report_path = os.path.join(OUTPUT_DIR, file_id, "report.txt")
+    os.makedirs(os.path.dirname(report_path), exist_ok=True)
+
     with open(report_path, "w", encoding="utf-8") as f:
         f.write(report_text)
 
-    return templates.TemplateResponse("results.html", {
-        "request": request,
-        "file_id": file_id,
-        "target": target,
-        "schema": schema,
-        "cleaning_report": cleaning_report,
-        "plots": plots,
-        "model_info": model_info,
-        "insight": insight,
-        "fi_plot_available": True if fi_plot_path else False,
-        "report_ready": True,
-        "model_choice": model_choice
-    })
-
-    knowledge_path = build_knowledge_file(
-        file_id,
-        schema_summary,
-        cleaning_report,
-        model_results,
-        feature_importance,
-        insights
+    return templates.TemplateResponse(
+        "results.html",
+        {
+            "request": request,
+            "file_id": file_id,
+            "target": target,
+            "schema": schema,
+            "cleaning_report": cleaning_report,
+            "plots": plots,
+            "model_info": model_info,
+            "insight": insight,
+            "fi_plot_available": fi_plot_path is not None,
+            "report_ready": True,
+            "model_choice": model_choice,
+            "step": step
+        }
     )
-
 
 
 @app.get("/download_report/{file_id}", response_class=PlainTextResponse)
 def download_report(file_id: str):
-    report_path = f"app/storage/outputs/{file_id}/report.txt"
+    report_path = os.path.join(OUTPUT_DIR, file_id, "report.txt")
     with open(report_path, "r", encoding="utf-8") as f:
         content = f.read()
-    return PlainTextResponse(content, headers={
-        "Content-Disposition": f"attachment; filename=report_{file_id}.txt"
-    })
+
+    return PlainTextResponse(
+        content,
+        headers={"Content-Disposition": f"attachment; filename=report_{file_id}.txt"}
+    )

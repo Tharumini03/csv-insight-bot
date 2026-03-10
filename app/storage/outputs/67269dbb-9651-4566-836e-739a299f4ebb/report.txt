@@ -1,0 +1,39 @@
+CSV Insight Bot — Analysis Report
+--------------------------------
+Target column: Age
+
+Schema Summary
+- Rows: 630000
+- Columns: 15
+- Total missing cells (raw): 0
+
+Cleaning Summary
+- Before: 630000 rows, 15 cols
+- After:  630000 rows, 15 cols
+- Missing after cleaning: 0
+
+Model Summary
+- Problem type: Regression
+- Model used: RandomForestRegressor
+- Metric: R²
+- Score: 0.0095
+
+Top Features
+- Chest pain type: 0.2981
+- EKG results: 0.1658
+- ST depression: 0.1611
+- FBS over 120: 0.1141
+- Number of vessels fluro: 0.0732
+- Cholesterol: 0.0296
+- Heart Disease_Absence: 0.0293
+- Thallium: 0.0267
+- id: 0.0235
+- Sex: 0.0214
+
+AI Insight
+The model achieved an accuracy of 0.009.
+
+The most important features influencing the prediction appear to be
+Chest pain type, EKG results, ST depression.
+
+This suggests these variables have the strongest relationship with the target outcome.

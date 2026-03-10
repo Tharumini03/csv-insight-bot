@@ -1,0 +1,39 @@
+CSV Insight Bot — Analysis Report
+--------------------------------
+Target column: Pclass
+
+Schema Summary
+- Rows: 418
+- Columns: 11
+- Total missing cells (raw): 414
+
+Cleaning Summary
+- Before: 418 rows, 11 cols
+- After:  418 rows, 11 cols
+- Missing after cleaning: 0
+
+Model Summary
+- Problem type: Classification
+- Model used: RandomForestClassifier
+- Metric: Accuracy
+- Score: 0.8095
+
+Top Features
+- Embarked_S: 0.2178
+- Cabin_B36: 0.0913
+- Cabin_G6: 0.0793
+- Cabin_F4: 0.0412
+- Cabin_F: 0.0219
+- Embarked_C: 0.0205
+- Embarked_Q: 0.0196
+- Cabin_F2: 0.0135
+- Cabin_F E46: 0.0121
+- Name_Zakarian, Mr. Ortin: 0.0083
+
+AI Insight
+The model achieved an accuracy of 0.81.
+
+The most important features influencing the prediction appear to be
+Embarked_S, Cabin_B36, Cabin_G6.
+
+This suggests these variables have the strongest relationship with the target outcome.
