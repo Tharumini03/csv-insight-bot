@@ -9,6 +9,7 @@ from app.agents.model_agent import train_and_evaluate
 from app.agents.insight_agent import generate_insight
 from app.agents.feature_plot_agent import plot_feature_importance
 from app.agents.report_download_agent import build_text_report
+from rag.build_knowledge import build_knowledge_file
 from fastapi.responses import PlainTextResponse
 
 from fastapi import FastAPI, Request, UploadFile, File
@@ -106,8 +107,18 @@ def analyze(
         "fi_plot_available": True if fi_plot_path else False,
         "report_ready": True,
         "model_choice": model_choice
-    }
-)
+    })
+
+    knowledge_path = build_knowledge_file(
+        file_id,
+        schema_summary,
+        cleaning_report,
+        model_results,
+        feature_importance,
+        insights
+    )
+
+
 
 @app.get("/download_report/{file_id}", response_class=PlainTextResponse)
 def download_report(file_id: str):
