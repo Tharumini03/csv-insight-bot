@@ -9,7 +9,7 @@ from app.agents.model_agent import train_and_evaluate
 from app.agents.insight_agent import generate_insight
 from app.agents.feature_plot_agent import plot_feature_importance
 from app.agents.report_download_agent import build_text_report
-from rag.build_knowledge import build_knowledge_file
+from app.rag.build_knowledge import build_knowledge_file
 from fastapi.responses import PlainTextResponse
 
 from fastapi import FastAPI, Request, UploadFile, File
