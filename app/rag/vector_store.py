@@ -3,13 +3,28 @@ import json
 import pickle
 import faiss
 import numpy as np
-from sentence_transformers import SentenceTransformer
+import requests
 
-MODEL_NAME = "all-MiniLM-L6-v2"
+OLLAMA_BASE_URL = "http://127.0.0.1:11434"
+OLLAMA_EMBED_MODEL = "embeddinggemma"
 
 
-def load_embedding_model():
-    return SentenceTransformer(MODEL_NAME)
+def get_ollama_embeddings(texts):
+    """
+    Generate embeddings using Ollama's /api/embed endpoint.
+    """
+    response = requests.post(
+        f"{OLLAMA_BASE_URL}/api/embed",
+        json={
+            "model": OLLAMA_EMBED_MODEL,
+            "input": texts
+        },
+        timeout=120
+    )
+    response.raise_for_status()
+
+    data = response.json()
+    return np.array(data["embeddings"], dtype="float32")
 
 
 def build_faiss_index(file_id: str, chunks_path: str):
@@ -23,13 +38,11 @@ def build_faiss_index(file_id: str, chunks_path: str):
         chunks = json.load(f)
 
     texts = [chunk["text"] for chunk in chunks]
-
-    model = load_embedding_model()
-    embeddings = model.encode(texts, convert_to_numpy=True)
+    embeddings = get_ollama_embeddings(texts)
 
     dimension = embeddings.shape[1]
     index = faiss.IndexFlatL2(dimension)
-    index.add(embeddings.astype("float32"))
+    index.add(embeddings)
 
     faiss.write_index(index, os.path.join(output_dir, "index.faiss"))
 
@@ -53,8 +66,7 @@ def search_faiss(file_id: str, query: str, top_k: int = 3):
     with open(chunks_path, "rb") as f:
         chunks = pickle.load(f)
 
-    model = load_embedding_model()
-    query_embedding = model.encode([query], convert_to_numpy=True).astype("float32")
+    query_embedding = get_ollama_embeddings([query])
 
     distances, indices = index.search(query_embedding, top_k)
 

@@ -1,9 +1,11 @@
 from app.rag.vector_store import search_faiss
+from app.rag.llm_answerer import generate_grounded_answer
 
 
 def answer_question(file_id: str, question: str):
     """
-    Retrieve the most relevant chunks using FAISS and build a simple answer.
+    Retrieve the most relevant chunks using FAISS,
+    then ask the local Ollama model to answer naturally.
     """
     top_chunks = search_faiss(file_id, question, top_k=3)
 
@@ -13,12 +15,7 @@ def answer_question(file_id: str, question: str):
             "sources": []
         }
 
-    combined_text = "\n\n".join([c["text"] for c in top_chunks])
-
-    answer = (
-        "Here is the most relevant information I found:\n\n"
-        f"{combined_text}"
-    )
+    answer = generate_grounded_answer(question, top_chunks)
 
     return {
         "answer": answer,
