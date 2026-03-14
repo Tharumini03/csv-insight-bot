@@ -10,6 +10,10 @@ from app.agents.insight_agent import generate_insight
 from app.agents.feature_plot_agent import plot_feature_importance
 from app.agents.report_download_agent import build_text_report
 from app.rag.build_knowledge import build_knowledge_file
+from app.rag.chunker import build_chunks_file
+from app.rag.chat_agent import answer_question
+from app.rag.vector_store import build_faiss_index
+
 
 from fastapi import FastAPI, Request, UploadFile, File, Form
 from fastapi.responses import HTMLResponse, PlainTextResponse
@@ -108,6 +112,12 @@ def analyze(
     )
     print("Knowledge file created:", knowledge_path)
 
+    chunks_path = build_chunks_file(file_id, knowledge_path)
+    print("Chunks file created:", chunks_path)
+
+    faiss_path = build_faiss_index(file_id, chunks_path)
+    print("FAISS index created:", faiss_path)
+
     # Save report
     report_path = os.path.join(OUTPUT_DIR, file_id, "report.txt")
     os.makedirs(os.path.dirname(report_path), exist_ok=True)
@@ -133,6 +143,23 @@ def analyze(
         }
     )
 
+@app.post("/chat", response_class=HTMLResponse)
+def chat_with_dataset(
+    request: Request,
+    file_id: str = Form(...),
+    question: str = Form(...)
+):
+    result = answer_question(file_id, question)
+
+    return templates.TemplateResponse(
+        "chat_response.html",
+        {
+            "request": request,
+            "question": question,
+            "answer": result["answer"],
+            "sources": result["sources"]
+        }
+    )
 
 @app.get("/download_report/{file_id}", response_class=PlainTextResponse)
 def download_report(file_id: str):

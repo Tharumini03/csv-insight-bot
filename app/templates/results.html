@@ -112,4 +112,30 @@
   });
 </script>
 
+<div class="mt-8 rounded-3xl border border-white/10 bg-white/5 p-6">
+  <h2 class="text-lg font-bold">Ask Questions About This Dataset</h2>
+  <p class="text-slate-300 mt-2">
+    Ask questions using the generated knowledge base.
+  </p>
+
+  <form action="/chat" method="post" class="mt-4 space-y-4">
+    <input type="hidden" name="file_id" value="{{ file_id }}">
+
+    <textarea
+      name="question"
+      rows="3"
+      required
+      placeholder="Example: What are the most important features?"
+      class="w-full rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+    ></textarea>
+
+    <button
+      type="submit"
+      class="rounded-2xl bg-indigo-500 hover:bg-indigo-400 px-5 py-3 font-semibold text-white shadow-lg shadow-indigo-500/20">
+      Ask Question
+    </button>
+  </form>
+</div>
+
+
 {% endblock %}

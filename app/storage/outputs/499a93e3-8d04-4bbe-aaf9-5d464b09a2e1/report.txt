@@ -1,0 +1,39 @@
+CSV Insight Bot — Analysis Report
+--------------------------------
+Target column: Parch
+
+Schema Summary
+- Rows: 418
+- Columns: 11
+- Total missing cells (raw): 414
+
+Cleaning Summary
+- Before: 418 rows, 11 cols
+- After:  418 rows, 11 cols
+- Missing after cleaning: 0
+
+Model Summary
+- Problem type: Classification
+- Model used: RandomForestClassifier
+- Metric: Accuracy
+- Score: 0.8571
+
+Top Features
+- Embarked_C: 0.1042
+- Embarked_S: 0.0879
+- Embarked_Q: 0.0653
+- Cabin_F4: 0.0456
+- Cabin_G6: 0.0154
+- Ticket_C.A. 42795: 0.0114
+- Ticket_347065: 0.0105
+- Ticket_PC 17759: 0.0099
+- Name_de Brito, Mr. Jose Joaquim: 0.0098
+- Name_Zakarian, Mr. Ortin: 0.0098
+
+AI Insight
+The model achieved an accuracy of 0.857.
+
+The most important features influencing the prediction appear to be
+Embarked_C, Embarked_S, Embarked_Q.
+
+This suggests these variables have the strongest relationship with the target outcome.
