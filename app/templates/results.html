@@ -141,14 +141,24 @@
       class="rounded-2xl bg-indigo-500 hover:bg-indigo-400 px-5 py-3 font-semibold text-white shadow-lg shadow-indigo-500/20">
       Send
     </button>
+
+    <button
+      type="button"
+      id="clear-chat"
+      class="ml-3 rounded-2xl bg-red-500 hover:bg-red-400 px-5 py-3 font-semibold text-white shadow-lg shadow-red-500/20">
+      Clear Chat
+    </button>
   </form>
 </div>
 
 <script>
-  const chatHistory = [];
   const chatForm = document.getElementById("chat-form");
   const chatBox = document.getElementById("chat-box");
   const questionInput = document.getElementById("question-input");
+  const clearChatBtn = document.getElementById("clear-chat");
+
+  const storageKey = "chat_history_{{ file_id }}";
+  let chatHistory = JSON.parse(localStorage.getItem(storageKey) || "[]");
 
   function addUserMessage(text) {
     const div = document.createElement("div");
@@ -215,47 +225,77 @@
       .replaceAll(">", "&gt;");
   }
 
+  function saveHistory() {
+    localStorage.setItem(storageKey, JSON.stringify(chatHistory));
+  }
+
+  function renderSavedChat() {
+    chatBox.innerHTML = "";
+
+    for (let i = 0; i < chatHistory.length; i++) {
+      const msg = chatHistory[i];
+
+      if (msg.role === "user") {
+        addUserMessage(msg.content);
+      } else if (msg.role === "assistant") {
+        addAssistantMessage(msg.content, msg.sources || []);
+      }
+    }
+  }
+
   chatForm.addEventListener("submit", async function(e) {
-  e.preventDefault();
+    e.preventDefault();
 
-  const question = questionInput.value.trim();
-  if (!question) return;
+    const question = questionInput.value.trim();
+    if (!question) return;
 
-  addUserMessage(question);
-  questionInput.value = "";
-  addTypingMessage();
+    addUserMessage(question);
+    chatHistory.push({
+      role: "user",
+      content: question
+    });
+    saveHistory();
 
-  chatHistory.push({
-    role: "user",
-    content: question
+    questionInput.value = "";
+    addTypingMessage();
+
+    const formData = new FormData();
+    formData.append("file_id", "{{ file_id }}");
+    formData.append("question", question);
+    formData.append("history", JSON.stringify(chatHistory));
+
+    try {
+      const response = await fetch("/chat", {
+        method: "POST",
+        body: formData
+      });
+
+      const data = await response.json();
+      removeTypingMessage();
+      addAssistantMessage(data.answer, data.sources);
+
+      chatHistory.push({
+        role: "assistant",
+        content: data.answer,
+        sources: data.sources || []
+      });
+      saveHistory();
+
+    } catch (error) {
+      removeTypingMessage();
+      addAssistantMessage("Something went wrong while getting the answer.", []);
+    }
   });
 
-  const formData = new FormData();
-  formData.append("file_id", "{{ file_id }}");
-  formData.append("question", question);
-  formData.append("history", JSON.stringify(chatHistory));
+  clearChatBtn.addEventListener("click", function() {
+    localStorage.removeItem(storageKey);
+    chatHistory = [];
+    chatBox.innerHTML = "";
+  });
 
-  try {
-    const response = await fetch("/chat", {
-      method: "POST",
-      body: formData
-    });
-
-    const data = await response.json();
-    removeTypingMessage();
-    addAssistantMessage(data.answer, data.sources);
-
-    chatHistory.push({
-      role: "assistant",
-      content: data.answer
-    });
-
-  } catch (error) {
-    removeTypingMessage();
-    addAssistantMessage("Something went wrong while getting the answer.", []);
-  }
-});
+  renderSavedChat();
 </script>
+
 
 
 
