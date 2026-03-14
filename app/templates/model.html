@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="mt-6 flex items-start justify-between flex-wrap gap-4">
+  <div>
+    <h1 class="text-3xl font-extrabold">Model</h1>
+    <p class="text-slate-300 mt-1">
+      Model details and feature importance.
+    </p>
+  </div>
+
+  <div class="flex gap-3">
+    <a class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 text-sm"
+       href="/">New analysis</a>
+    <a class="px-4 py-2 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-sm font-semibold text-white"
+       href="/download_report/{{ file_id }}">Download report</a>
+  </div>
+</div>
+
+<!-- Navigation -->
+<div class="mt-6 flex gap-3 flex-wrap">
+  <a class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 text-sm"
+     href="/overview/{{ file_id }}">Overview</a>
+  <a class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 text-sm"
+     href="/plots/{{ file_id }}">Plots</a>
+  <a class="px-4 py-2 rounded-xl bg-indigo-500 text-white text-sm font-semibold"
+     href="/model/{{ file_id }}">Model</a>
+  <a class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 text-sm"
+     href="/chat_page/{{ file_id }}">Chat</a>
+</div>
+
+<div class="mt-6 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+  <div class="rounded-2xl border border-white/10 bg-white/5 p-5">
+    <div class="text-xs text-slate-400">Problem type</div>
+    <div class="text-2xl font-bold mt-1">{{ data.model_info.problem_type }}</div>
+  </div>
+  <div class="rounded-2xl border border-white/10 bg-white/5 p-5">
+    <div class="text-xs text-slate-400">Model used</div>
+    <div class="text-2xl font-bold mt-1">{{ data.model_info.model_used }}</div>
+  </div>
+  <div class="rounded-2xl border border-white/10 bg-white/5 p-5">
+    <div class="text-xs text-slate-400">{{ data.model_info.metric }}</div>
+    <div class="text-2xl font-bold mt-1">{{ "%.4f"|format(data.model_info.score) }}</div>
+  </div>
+  <div class="rounded-2xl border border-white/10 bg-white/5 p-5">
+    <div class="text-xs text-slate-400">Target</div>
+    <div class="text-2xl font-bold mt-1">{{ data.target }}</div>
+  </div>
+</div>
+
+<div class="mt-6 grid lg:grid-cols-2 gap-4">
+  <div class="rounded-3xl border border-white/10 bg-white/5 p-6">
+    <h2 class="text-lg font-bold">Training Details</h2>
+    <p class="text-slate-300 mt-3 text-sm">
+      Train rows: {{ data.model_info.train_rows }}<br>
+      Test rows: {{ data.model_info.test_rows }}<br>
+      Numeric features: {{ data.model_info.num_features }}<br>
+      Categorical features: {{ data.model_info.cat_features }}
+    </p>
+  </div>
+
+  <div class="rounded-3xl border border-white/10 bg-white/5 p-6">
+    <h2 class="text-lg font-bold">Chosen Model</h2>
+    <p class="text-slate-300 mt-3 text-sm">
+      Model choice: {{ data.model_choice }}<br>
+      Final model used: {{ data.model_info.model_used }}
+    </p>
+  </div>
+</div>
+
+<div class="mt-6 rounded-3xl border border-white/10 bg-white/5 p-6">
+  <h2 class="text-lg font-bold">Top Feature Importance</h2>
+
+  {% if data.model_info.feature_importance %}
+    <div class="mt-4 space-y-3">
+      {% for f, v in data.model_info.feature_importance[:15] %}
+        <div>
+          <div class="flex justify-between text-sm">
+            <span class="text-slate-200">{{ f }}</span>
+            <span class="text-slate-400">{{ "%.4f"|format(v) }}</span>
+          </div>
+          <div class="h-2 rounded-full bg-white/10 mt-2">
+            {% set bar_width = (v * 100) if (v * 100) < 100 else 100 %}
+            <div class="h-2 rounded-full bg-indigo-400" style="width: {{ bar_width }}%"></div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-slate-400 mt-3 text-sm">Feature importance is not available for this model.</p>
+  {% endif %}
+</div>
+
+{% endblock %}

@@ -132,7 +132,7 @@ def analyze(
     with open(report_path, "w", encoding="utf-8") as f:
         f.write(report_text)
 
-    # STEP 1: Save all analysis results into one JSON file
+    # Save all analysis results into one JSON file
     analysis_data = {
         "file_id": file_id,
         "target": target,
@@ -152,7 +152,6 @@ def analyze(
     with open(analysis_json_path, "w", encoding="utf-8") as f:
         json.dump(analysis_data, f, indent=2)
 
-    # Redirect to cleaner overview page
     return RedirectResponse(url=f"/overview/{file_id}", status_code=303)
 
 
@@ -161,6 +160,32 @@ def overview_page(request: Request, file_id: str):
     data = load_analysis_data(file_id)
     return templates.TemplateResponse(
         "overview.html",
+        {
+            "request": request,
+            "data": data,
+            "file_id": file_id
+        }
+    )
+
+
+@app.get("/plots/{file_id}", response_class=HTMLResponse)
+def plots_page(request: Request, file_id: str):
+    data = load_analysis_data(file_id)
+    return templates.TemplateResponse(
+        "plots.html",
+        {
+            "request": request,
+            "data": data,
+            "file_id": file_id
+        }
+    )
+
+
+@app.get("/model/{file_id}", response_class=HTMLResponse)
+def model_page(request: Request, file_id: str):
+    data = load_analysis_data(file_id)
+    return templates.TemplateResponse(
+        "model.html",
         {
             "request": request,
             "data": data,
