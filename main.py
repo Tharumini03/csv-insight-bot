@@ -1,8 +1,7 @@
 import os
 import uuid
-import pandas as pd
 import json
-
+import pandas as pd
 
 from app.agents.schema_agent import detect_schema
 from app.agents.cleaning_agent import basic_clean
@@ -16,9 +15,8 @@ from app.rag.chunker import build_chunks_file
 from app.rag.chat_agent import answer_question
 from app.rag.vector_store import build_faiss_index
 
-
 from fastapi import FastAPI, Request, UploadFile, File, Form
-from fastapi.responses import HTMLResponse, PlainTextResponse, JSONResponse
+from fastapi.responses import HTMLResponse, PlainTextResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -34,6 +32,12 @@ app = FastAPI()
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 app.mount("/outputs", StaticFiles(directory=OUTPUT_DIR), name="outputs")
 templates = Jinja2Templates(directory="app/templates")
+
+
+def load_analysis_data(file_id: str):
+    analysis_path = os.path.join(OUTPUT_DIR, file_id, "analysis_data.json")
+    with open(analysis_path, "r", encoding="utf-8") as f:
+        return json.load(f)
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -70,7 +74,7 @@ async def upload_csv(request: Request, file: UploadFile = File(...), step: int =
     )
 
 
-@app.post("/analyze", response_class=HTMLResponse)
+@app.post("/analyze")
 def analyze(
     request: Request,
     file_id: str = Form(...),
@@ -121,29 +125,62 @@ def analyze(
     print("FAISS index created:", faiss_path)
 
     # Save report
-    report_path = os.path.join(OUTPUT_DIR, file_id, "report.txt")
-    os.makedirs(os.path.dirname(report_path), exist_ok=True)
+    output_folder = os.path.join(OUTPUT_DIR, file_id)
+    os.makedirs(output_folder, exist_ok=True)
 
+    report_path = os.path.join(output_folder, "report.txt")
     with open(report_path, "w", encoding="utf-8") as f:
         f.write(report_text)
 
+    # STEP 1: Save all analysis results into one JSON file
+    analysis_data = {
+        "file_id": file_id,
+        "target": target,
+        "model_choice": model_choice,
+        "schema": schema,
+        "cleaning_report": cleaning_report,
+        "model_info": model_info,
+        "insight": insight,
+        "plots": {
+            "target_plot": f"/outputs/{file_id}/target_distribution.png",
+            "heatmap": f"/outputs/{file_id}/correlation_heatmap.png" if plots.get("heatmap") else None,
+            "feature_importance_plot": f"/outputs/{file_id}/feature_importance.png" if fi_plot_path else None
+        }
+    }
+
+    analysis_json_path = os.path.join(output_folder, "analysis_data.json")
+    with open(analysis_json_path, "w", encoding="utf-8") as f:
+        json.dump(analysis_data, f, indent=2)
+
+    # Redirect to cleaner overview page
+    return RedirectResponse(url=f"/overview/{file_id}", status_code=303)
+
+
+@app.get("/overview/{file_id}", response_class=HTMLResponse)
+def overview_page(request: Request, file_id: str):
+    data = load_analysis_data(file_id)
     return templates.TemplateResponse(
-        "results.html",
+        "overview.html",
         {
             "request": request,
-            "file_id": file_id,
-            "target": target,
-            "schema": schema,
-            "cleaning_report": cleaning_report,
-            "plots": plots,
-            "model_info": model_info,
-            "insight": insight,
-            "fi_plot_available": fi_plot_path is not None,
-            "report_ready": True,
-            "model_choice": model_choice,
-            "step": step
+            "data": data,
+            "file_id": file_id
         }
     )
+
+
+@app.get("/chat_page/{file_id}", response_class=HTMLResponse)
+def chat_page(request: Request, file_id: str):
+    data = load_analysis_data(file_id)
+    return templates.TemplateResponse(
+        "chat.html",
+        {
+            "request": request,
+            "data": data,
+            "file_id": file_id
+        }
+    )
+
 
 @app.post("/chat")
 def chat_with_dataset(
@@ -159,7 +196,6 @@ def chat_with_dataset(
         "answer": result["answer"],
         "sources": result["sources"]
     })
-
 
 
 @app.get("/download_report/{file_id}", response_class=PlainTextResponse)

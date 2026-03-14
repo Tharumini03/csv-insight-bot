@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="mt-6 flex items-start justify-between flex-wrap gap-4">
+  <div>
+    <h1 class="text-3xl font-extrabold">Chat with Analysis</h1>
+    <p class="text-slate-300 mt-1">
+      Ask questions about the analyzed dataset.
+    </p>
+  </div>
+
+  <div class="flex gap-3">
+    <a class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 text-sm"
+       href="/">New analysis</a>
+    <a class="px-4 py-2 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-sm font-semibold text-white"
+       href="/download_report/{{ file_id }}">Download report</a>
+  </div>
+</div>
+
+<!-- Navigation -->
+<div class="mt-6 flex gap-3 flex-wrap">
+  <a class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 text-sm"
+     href="/overview/{{ file_id }}">Overview</a>
+  <a class="px-4 py-2 rounded-xl bg-indigo-500 text-white text-sm font-semibold"
+     href="/chat_page/{{ file_id }}">Chat</a>
+</div>
+
+<div class="mt-8 rounded-3xl border border-white/10 bg-white/5 p-6">
+  <h2 class="text-lg font-bold">Dataset Chat Assistant</h2>
+  <p class="text-slate-300 mt-2">
+    Ask questions using the generated knowledge base.
+  </p>
+
+  <!-- Chat history -->
+  <div id="chat-box" class="mt-6 space-y-4 max-h-[600px] overflow-y-auto pr-2">
+  </div>
+
+  <!-- Chat input -->
+  <form id="chat-form" class="mt-6 space-y-4">
+    <textarea
+      id="question-input"
+      rows="3"
+      required
+      placeholder="Example: What are the most important features?"
+      class="w-full rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+    ></textarea>
+
+    <div class="flex gap-3">
+      <button
+        type="submit"
+        class="rounded-2xl bg-indigo-500 hover:bg-indigo-400 px-5 py-3 font-semibold text-white shadow-lg shadow-indigo-500/20">
+        Send
+      </button>
+
+      <button
+        type="button"
+        id="clear-chat"
+        class="rounded-2xl bg-red-500 hover:bg-red-400 px-5 py-3 font-semibold text-white shadow-lg shadow-red-500/20">
+        Clear Chat
+      </button>
+    </div>
+  </form>
+</div>
+
+<script>
+  const chatForm = document.getElementById("chat-form");
+  const chatBox = document.getElementById("chat-box");
+  const questionInput = document.getElementById("question-input");
+  const clearChatBtn = document.getElementById("clear-chat");
+
+  const storageKey = "chat_history_{{ file_id }}";
+  let chatHistory = JSON.parse(localStorage.getItem(storageKey) || "[]");
+
+  function addUserMessage(text) {
+    const div = document.createElement("div");
+    div.className = "rounded-2xl bg-indigo-500/20 border border-indigo-400/20 p-4";
+    div.innerHTML = `
+      <div class="text-xs text-indigo-200 mb-1">You</div>
+      <div class="text-slate-100 whitespace-pre-wrap">${escapeHtml(text)}</div>
+    `;
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  function addAssistantMessage(answer, sources) {
+    const div = document.createElement("div");
+    div.className = "rounded-2xl bg-slate-900/70 border border-white/10 p-4";
+
+    let sourcesHtml = "";
+    if (sources && sources.length > 0) {
+      const items = sources.map(source => `
+        <li class="mt-2 rounded-xl border border-white/10 bg-white/5 p-3">
+          <div class="text-xs text-slate-400">Chunk ${source.chunk_id} • Distance ${Number(source.score).toFixed(4)}</div>
+          <div class="mt-2 text-sm text-slate-200 whitespace-pre-wrap">${escapeHtml(source.text)}</div>
+        </li>
+      `).join("");
+
+      sourcesHtml = `
+        <div class="mt-4">
+          <div class="text-sm text-slate-400 font-semibold">Sources</div>
+          <ul class="mt-2 space-y-2">${items}</ul>
+        </div>
+      `;
+    }
+
+    div.innerHTML = `
+      <div class="text-xs text-emerald-200 mb-1">Assistant</div>
+      <div class="text-slate-100 whitespace-pre-wrap">${escapeHtml(answer)}</div>
+      ${sourcesHtml}
+    `;
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  function addTypingMessage() {
+    const div = document.createElement("div");
+    div.id = "typing-indicator";
+    div.className = "rounded-2xl bg-slate-900/70 border border-white/10 p-4 text-slate-300";
+    div.innerHTML = `
+      <div class="text-xs text-emerald-200 mb-1">Assistant</div>
+      <div>Typing...</div>
+    `;
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  function removeTypingMessage() {
+    const typing = document.getElementById("typing-indicator");
+    if (typing) typing.remove();
+  }
+
+  function escapeHtml(text) {
+    return text
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;");
+  }
+
+  function saveHistory() {
+    localStorage.setItem(storageKey, JSON.stringify(chatHistory));
+  }
+
+  function renderSavedChat() {
+    chatBox.innerHTML = "";
+
+    for (let i = 0; i < chatHistory.length; i++) {
+      const msg = chatHistory[i];
+
+      if (msg.role === "user") {
+        addUserMessage(msg.content);
+      } else if (msg.role === "assistant") {
+        addAssistantMessage(msg.content, msg.sources || []);
+      }
+    }
+  }
+
+  chatForm.addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const question = questionInput.value.trim();
+    if (!question) return;
+
+    addUserMessage(question);
+    chatHistory.push({
+      role: "user",
+      content: question
+    });
+    saveHistory();
+
+    questionInput.value = "";
+    addTypingMessage();
+
+    const formData = new FormData();
+    formData.append("file_id", "{{ file_id }}");
+    formData.append("question", question);
+    formData.append("history", JSON.stringify(chatHistory));
+
+    try {
+      const response = await fetch("/chat", {
+        method: "POST",
+        body: formData
+      });
+
+      const data = await response.json();
+      removeTypingMessage();
+      addAssistantMessage(data.answer, data.sources);
+
+      chatHistory.push({
+        role: "assistant",
+        content: data.answer,
+        sources: data.sources || []
+      });
+      saveHistory();
+
+    } catch (error) {
+      removeTypingMessage();
+      addAssistantMessage("Something went wrong while getting the answer.", []);
+    }
+  });
+
+  clearChatBtn.addEventListener("click", function() {
+    localStorage.removeItem(storageKey);
+    chatHistory = [];
+    chatBox.innerHTML = "";
+  });
+
+  renderSavedChat();
+</script>
+
+{% endblock %}
