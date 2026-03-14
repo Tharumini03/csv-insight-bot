@@ -16,7 +16,7 @@ from app.rag.vector_store import build_faiss_index
 
 
 from fastapi import FastAPI, Request, UploadFile, File, Form
-from fastapi.responses import HTMLResponse, PlainTextResponse
+from fastapi.responses import HTMLResponse, PlainTextResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -143,23 +143,19 @@ def analyze(
         }
     )
 
-@app.post("/chat", response_class=HTMLResponse)
+@app.post("/chat")
 def chat_with_dataset(
-    request: Request,
     file_id: str = Form(...),
     question: str = Form(...)
 ):
     result = answer_question(file_id, question)
 
-    return templates.TemplateResponse(
-        "chat_response.html",
-        {
-            "request": request,
-            "question": question,
-            "answer": result["answer"],
-            "sources": result["sources"]
-        }
-    )
+    return JSONResponse({
+        "question": question,
+        "answer": result["answer"],
+        "sources": result["sources"]
+    })
+
 
 @app.get("/download_report/{file_id}", response_class=PlainTextResponse)
 def download_report(file_id: str):

@@ -115,13 +115,20 @@
 <div class="mt-8 rounded-3xl border border-white/10 bg-white/5 p-6">
   <h2 class="text-lg font-bold">Ask Questions About This Dataset</h2>
   <p class="text-slate-300 mt-2">
-    Ask questions using the generated knowledge base.
+    Chat with the generated knowledge base.
   </p>
 
-  <form action="/chat" method="post" class="mt-4 space-y-4">
+  <!-- Chat history -->
+  <div id="chat-box" class="mt-6 space-y-4 max-h-[600px] overflow-y-auto pr-2">
+    <!-- Messages will appear here -->
+  </div>
+
+  <!-- Chat input -->
+  <form id="chat-form" class="mt-6 space-y-4">
     <input type="hidden" name="file_id" value="{{ file_id }}">
 
     <textarea
+      id="question-input"
       name="question"
       rows="3"
       required
@@ -132,10 +139,111 @@
     <button
       type="submit"
       class="rounded-2xl bg-indigo-500 hover:bg-indigo-400 px-5 py-3 font-semibold text-white shadow-lg shadow-indigo-500/20">
-      Ask Question
+      Send
     </button>
   </form>
 </div>
+
+<script>
+  const chatForm = document.getElementById("chat-form");
+  const chatBox = document.getElementById("chat-box");
+  const questionInput = document.getElementById("question-input");
+
+  function addUserMessage(text) {
+    const div = document.createElement("div");
+    div.className = "rounded-2xl bg-indigo-500/20 border border-indigo-400/20 p-4";
+    div.innerHTML = `
+      <div class="text-xs text-indigo-200 mb-1">You</div>
+      <div class="text-slate-100 whitespace-pre-wrap">${escapeHtml(text)}</div>
+    `;
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  function addAssistantMessage(answer, sources) {
+    const div = document.createElement("div");
+    div.className = "rounded-2xl bg-slate-900/70 border border-white/10 p-4";
+
+    let sourcesHtml = "";
+    if (sources && sources.length > 0) {
+      const items = sources.map(source => `
+        <li class="mt-2 rounded-xl border border-white/10 bg-white/5 p-3">
+          <div class="text-xs text-slate-400">Chunk ${source.chunk_id} • Distance ${Number(source.score).toFixed(4)}</div>
+          <div class="mt-2 text-sm text-slate-200 whitespace-pre-wrap">${escapeHtml(source.text)}</div>
+        </li>
+      `).join("");
+
+      sourcesHtml = `
+        <div class="mt-4">
+          <div class="text-sm text-slate-400 font-semibold">Sources</div>
+          <ul class="mt-2 space-y-2">${items}</ul>
+        </div>
+      `;
+    }
+
+    div.innerHTML = `
+      <div class="text-xs text-emerald-200 mb-1">Assistant</div>
+      <div class="text-slate-100 whitespace-pre-wrap">${escapeHtml(answer)}</div>
+      ${sourcesHtml}
+    `;
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  function addTypingMessage() {
+    const div = document.createElement("div");
+    div.id = "typing-indicator";
+    div.className = "rounded-2xl bg-slate-900/70 border border-white/10 p-4 text-slate-300";
+    div.innerHTML = `
+      <div class="text-xs text-emerald-200 mb-1">Assistant</div>
+      <div>Typing...</div>
+    `;
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  function removeTypingMessage() {
+    const typing = document.getElementById("typing-indicator");
+    if (typing) typing.remove();
+  }
+
+  function escapeHtml(text) {
+    return text
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;");
+  }
+
+  chatForm.addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const question = questionInput.value.trim();
+    if (!question) return;
+
+    addUserMessage(question);
+    questionInput.value = "";
+    addTypingMessage();
+
+    const formData = new FormData();
+    formData.append("file_id", "{{ file_id }}");
+    formData.append("question", question);
+
+    try {
+      const response = await fetch("/chat", {
+        method: "POST",
+        body: formData
+      });
+
+      const data = await response.json();
+      removeTypingMessage();
+      addAssistantMessage(data.answer, data.sources);
+    } catch (error) {
+      removeTypingMessage();
+      addAssistantMessage("Something went wrong while getting the answer.", []);
+    }
+  });
+</script>
+
 
 
 {% endblock %}

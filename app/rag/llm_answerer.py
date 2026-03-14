@@ -5,10 +5,6 @@ OLLAMA_CHAT_MODEL = "gemma3"
 
 
 def generate_grounded_answer(question: str, retrieved_chunks: list):
-    """
-    Use a local Ollama model to answer naturally,
-    but only from the retrieved context.
-    """
     if not retrieved_chunks:
         return "I could not find relevant information in the knowledge base."
 
@@ -25,7 +21,11 @@ If the answer is not clearly present in the context, say:
 "I could not find that in the retrieved analysis results."
 
 Write clearly and naturally for a beginner.
-Summarize the answer instead of copying raw chunk text whenever possible.
+Summarize instead of copying raw chunk text.
+
+At the end of the answer, add a short citation line like:
+Sources: [Chunk 1], [Chunk 3]
+Use only chunk IDs that were actually provided.
 """
 
     payload = {
@@ -44,5 +44,4 @@ Summarize the answer instead of copying raw chunk text whenever possible.
     response.raise_for_status()
 
     data = response.json()
-
     return data["message"]["content"]
