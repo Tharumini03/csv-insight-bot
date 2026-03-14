@@ -145,6 +145,7 @@
 </div>
 
 <script>
+  const chatHistory = [];
   const chatForm = document.getElementById("chat-form");
   const chatBox = document.getElementById("chat-box");
   const questionInput = document.getElementById("question-input");
@@ -215,33 +216,45 @@
   }
 
   chatForm.addEventListener("submit", async function(e) {
-    e.preventDefault();
+  e.preventDefault();
 
-    const question = questionInput.value.trim();
-    if (!question) return;
+  const question = questionInput.value.trim();
+  if (!question) return;
 
-    addUserMessage(question);
-    questionInput.value = "";
-    addTypingMessage();
+  addUserMessage(question);
+  questionInput.value = "";
+  addTypingMessage();
 
-    const formData = new FormData();
-    formData.append("file_id", "{{ file_id }}");
-    formData.append("question", question);
-
-    try {
-      const response = await fetch("/chat", {
-        method: "POST",
-        body: formData
-      });
-
-      const data = await response.json();
-      removeTypingMessage();
-      addAssistantMessage(data.answer, data.sources);
-    } catch (error) {
-      removeTypingMessage();
-      addAssistantMessage("Something went wrong while getting the answer.", []);
-    }
+  chatHistory.push({
+    role: "user",
+    content: question
   });
+
+  const formData = new FormData();
+  formData.append("file_id", "{{ file_id }}");
+  formData.append("question", question);
+  formData.append("history", JSON.stringify(chatHistory));
+
+  try {
+    const response = await fetch("/chat", {
+      method: "POST",
+      body: formData
+    });
+
+    const data = await response.json();
+    removeTypingMessage();
+    addAssistantMessage(data.answer, data.sources);
+
+    chatHistory.push({
+      role: "assistant",
+      content: data.answer
+    });
+
+  } catch (error) {
+    removeTypingMessage();
+    addAssistantMessage("Something went wrong while getting the answer.", []);
+  }
+});
 </script>
 
 

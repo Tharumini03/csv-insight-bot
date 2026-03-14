@@ -1,6 +1,8 @@
 import os
 import uuid
 import pandas as pd
+import json
+
 
 from app.agents.schema_agent import detect_schema
 from app.agents.cleaning_agent import basic_clean
@@ -146,15 +148,18 @@ def analyze(
 @app.post("/chat")
 def chat_with_dataset(
     file_id: str = Form(...),
-    question: str = Form(...)
+    question: str = Form(...),
+    history: str = Form("[]")
 ):
-    result = answer_question(file_id, question)
+    parsed_history = json.loads(history)
+    result = answer_question(file_id, question, parsed_history)
 
     return JSONResponse({
         "question": question,
         "answer": result["answer"],
         "sources": result["sources"]
     })
+
 
 
 @app.get("/download_report/{file_id}", response_class=PlainTextResponse)

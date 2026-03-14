@@ -4,7 +4,10 @@ OLLAMA_BASE_URL = "http://127.0.0.1:11434"
 OLLAMA_CHAT_MODEL = "gemma3"
 
 
-def generate_grounded_answer(question: str, retrieved_chunks: list):
+def generate_grounded_answer(question: str, retrieved_chunks: list, history=None):
+    if history is None:
+        history = []
+
     if not retrieved_chunks:
         return "I could not find relevant information in the knowledge base."
 
@@ -20,23 +23,34 @@ Do not invent facts.
 If the answer is not clearly present in the context, say:
 "I could not find that in the retrieved analysis results."
 
+Use conversation history when the user refers to earlier questions like:
+"that", "it", "this result", "why", "explain more".
+
 Write clearly and naturally for a beginner.
-Summarize instead of copying raw chunk text.
+Summarize instead of copying raw chunk text whenever possible.
 
 At the end of the answer, add a short citation line like:
 Sources: [Chunk 1], [Chunk 3]
 Use only chunk IDs that were actually provided.
 """
 
+    messages = [{"role": "system", "content": system_prompt}]
+
+    for item in history[-6:]:
+        if item["role"] in ["user", "assistant"]:
+            messages.append({
+                "role": item["role"],
+                "content": item["content"]
+            })
+
+    messages.append({
+        "role": "user",
+        "content": f"Question:\n{question}\n\nRetrieved context:\n{context}"
+    })
+
     payload = {
         "model": OLLAMA_CHAT_MODEL,
-        "messages": [
-            {"role": "system", "content": system_prompt},
-            {
-                "role": "user",
-                "content": f"Question:\n{question}\n\nRetrieved context:\n{context}"
-            }
-        ],
+        "messages": messages,
         "stream": False
     }
 
