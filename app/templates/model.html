@@ -1,32 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="mt-6 flex items-start justify-between flex-wrap gap-4">
-  <div>
-    <h1 class="text-3xl font-extrabold">Model</h1>
-    <p class="text-slate-300 mt-1">
-      Model details and feature importance.
-    </p>
-  </div>
-
-  <div class="flex gap-3">
-    <a class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 text-sm"
-       href="/">New analysis</a>
-    <a class="px-4 py-2 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-sm font-semibold text-white"
-       href="/download_report/{{ file_id }}">Download report</a>
-  </div>
-</div>
-
-<!-- Navigation -->
-<div class="mt-6 flex gap-3 flex-wrap">
-  <a class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 text-sm"
-     href="/overview/{{ file_id }}">Overview</a>
-  <a class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 text-sm"
-     href="/plots/{{ file_id }}">Plots</a>
-  <a class="px-4 py-2 rounded-xl bg-indigo-500 text-white text-sm font-semibold"
-     href="/model/{{ file_id }}">Model</a>
-  <a class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 text-sm"
-     href="/chat_page/{{ file_id }}">Chat</a>
+<div>
+  <h1 class="text-3xl font-extrabold">Model</h1>
+  <p class="text-slate-300 mt-1">Model details and feature importance.</p>
 </div>
 
 <div class="mt-6 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">

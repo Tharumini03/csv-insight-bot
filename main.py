@@ -163,7 +163,8 @@ def overview_page(request: Request, file_id: str):
         {
             "request": request,
             "data": data,
-            "file_id": file_id
+            "file_id": file_id,
+            "active_page": "overview"
         }
     )
 
@@ -176,7 +177,8 @@ def plots_page(request: Request, file_id: str):
         {
             "request": request,
             "data": data,
-            "file_id": file_id
+            "file_id": file_id,
+            "active_page": "plots"
         }
     )
 
@@ -189,7 +191,8 @@ def model_page(request: Request, file_id: str):
         {
             "request": request,
             "data": data,
-            "file_id": file_id
+            "file_id": file_id,
+            "active_page": "model"
         }
     )
 
@@ -202,10 +205,10 @@ def chat_page(request: Request, file_id: str):
         {
             "request": request,
             "data": data,
-            "file_id": file_id
+            "file_id": file_id,
+            "active_page": "chat"
         }
     )
-
 
 @app.post("/chat")
 def chat_with_dataset(

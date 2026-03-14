@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="mt-6 flex items-start justify-between flex-wrap gap-4">
+<div class="flex items-start justify-between flex-wrap gap-4">
   <div>
     <h1 class="text-3xl font-extrabold">Overview</h1>
     <p class="text-slate-300 mt-1">
@@ -10,28 +10,8 @@
       • Score: <span class="text-slate-100 font-semibold">{{ "%.4f"|format(data.model_info.score) }}</span>
     </p>
   </div>
-
-  <div class="flex gap-3">
-    <a class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 text-sm"
-       href="/">New analysis</a>
-    <a class="px-4 py-2 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-sm font-semibold text-white"
-       href="/download_report/{{ file_id }}">Download report</a>
-  </div>
 </div>
 
-<!-- Navigation -->
-<div class="mt-6 flex gap-3 flex-wrap">
-  <a class="px-4 py-2 rounded-xl bg-indigo-500 text-white text-sm font-semibold"
-     href="/overview/{{ file_id }}">Overview</a>
-  <a class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 text-sm"
-     href="/plots/{{ file_id }}">Plots</a>
-  <a class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 text-sm"
-     href="/model/{{ file_id }}">Model</a>
-  <a class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 text-sm"
-     href="/chat_page/{{ file_id }}">Chat</a>
-</div>
-
-<!-- Summary cards -->
 <div class="mt-6 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
   <div class="rounded-2xl border border-white/10 bg-white/5 p-5">
     <div class="text-xs text-slate-400">Rows</div>
@@ -48,22 +28,6 @@
   <div class="rounded-2xl border border-white/10 bg-white/5 p-5">
     <div class="text-xs text-slate-400">{{ data.model_info.metric }}</div>
     <div class="text-2xl font-bold mt-1">{{ "%.4f"|format(data.model_info.score) }}</div>
-  </div>
-</div>
-
-<div class="mt-6 grid lg:grid-cols-2 gap-4">
-  <div class="rounded-3xl border border-white/10 bg-white/5 p-6">
-    <h2 class="text-lg font-bold">AI Insight</h2>
-    <p class="text-slate-300 mt-3 whitespace-pre-line">{{ data.insight }}</p>
-  </div>
-
-  <div class="rounded-3xl border border-white/10 bg-white/5 p-6">
-    <h2 class="text-lg font-bold">Cleaning Summary</h2>
-    <p class="text-slate-300 mt-3 text-sm">
-      Before: {{ data.cleaning_report.before_shape.rows }} rows, {{ data.cleaning_report.before_shape.cols }} cols<br>
-      After: {{ data.cleaning_report.after_shape.rows }} rows, {{ data.cleaning_report.after_shape.cols }} cols<br>
-      Missing after cleaning: {{ data.cleaning_report.total_missing_after }}
-    </p>
   </div>
 </div>
 
