@@ -70,7 +70,7 @@ def train_and_evaluate(df: pd.DataFrame, target: str, model_choice: str = "rf") 
                     ("num", "passthrough", numeric_features),
                 ]
             )
-            model = RandomForestClassifier(n_estimators=200, random_state=42)
+            model = RandomForestClassifier(n_estimators=100, random_state=42)
 
     else:
         # Regression case: Logistic Regression is not valid.
@@ -83,7 +83,7 @@ def train_and_evaluate(df: pd.DataFrame, target: str, model_choice: str = "rf") 
                 ("num", "passthrough", numeric_features),
             ]
         )
-        model = RandomForestRegressor(n_estimators=300, random_state=42)
+        model = RandomForestRegressor(n_estimators=100, random_state=42)
 
     pipeline = Pipeline(steps=[
         ("prep", preprocessor),

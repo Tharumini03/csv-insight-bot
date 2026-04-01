@@ -43,7 +43,7 @@ def run_eda(df: pd.DataFrame, target: str, file_id: str):
         corr = numeric_df.corr()
 
         plt.figure(figsize=(8,6))
-        sns.heatmap(corr, annot=True, cmap="coolwarm")
+        sns.heatmap(corr, annot=numeric_df.shape[1] <= 10, cmap="coolwarm")
 
         plt.title("Correlation Heatmap")
 

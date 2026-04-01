@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ title if title else "CSV Insight Bot" }}</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    html, body { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+  </style>
+</head>
+
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+  <div class="absolute inset-x-0 -top-40 h-96 bg-gradient-to-r from-indigo-600/25 via-fuchsia-600/20 to-cyan-500/20 blur-3xl pointer-events-none"></div>
+
+  <div class="relative z-10 min-h-screen flex">
+
+    {% if file_id %}
+    <!-- Sidebar -->
+    <aside class="w-72 shrink-0 border-r border-white/10 bg-slate-950/80 backdrop-blur-xl hidden md:flex md:flex-col">
+      <div class="p-6 border-b border-white/10">
+        <div class="flex items-center gap-3">
+          <div class="h-11 w-11 rounded-2xl bg-white/10 border border-white/10 flex items-center justify-center">
+            <span class="text-xl">🧠</span>
+          </div>
+          <div>
+            <div class="font-bold">CSV Insight Bot</div>
+            <div class="text-xs text-slate-400">Agentic AI dashboard</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-4">
+        <div class="text-xs uppercase tracking-wide text-slate-500 px-3 mb-3">Navigation</div>
+
+        <nav class="space-y-2">
+          <a href="/overview/{{ file_id }}"
+             class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium
+             {% if active_page == 'overview' %}bg-indigo-500 text-white{% else %}bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10{% endif %}">
+            <span>📋</span> <span>Overview</span>
+          </a>
+
+          <a href="/plots/{{ file_id }}"
+             class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium
+             {% if active_page == 'plots' %}bg-indigo-500 text-white{% else %}bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10{% endif %}">
+            <span>📈</span> <span>Plots</span>
+          </a>
+
+          <a href="/model/{{ file_id }}"
+             class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium
+             {% if active_page == 'model' %}bg-indigo-500 text-white{% else %}bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10{% endif %}">
+            <span>🤖</span> <span>Model</span>
+          </a>
+
+          <a href="/chat_page/{{ file_id }}"
+             class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium
+             {% if active_page == 'chat' %}bg-indigo-500 text-white{% else %}bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10{% endif %}">
+            <span>💬</span> <span>Chat</span>
+          </a>
+        </nav>
+
+        <div class="mt-8 text-xs uppercase tracking-wide text-slate-500 px-3 mb-3">Actions</div>
+
+        <div class="space-y-2">
+          <a href="/download_report/{{ file_id }}"
+             class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10">
+            <span>⬇️</span> <span>Download Report</span>
+          </a>
+
+          <a href="/"
+             class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10">
+            <span>➕</span> <span>New Analysis</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="mt-auto p-4 border-t border-white/10">
+        <div class="rounded-2xl bg-white/5 border border-white/10 p-4">
+          <div class="text-xs text-slate-400">Current file</div>
+          <div class="mt-1 text-sm font-medium break-all">{{ file_id }}</div>
+        </div>
+      </div>
+    </aside>
+    {% endif %}
+
+    <!-- Main area -->
+    <div class="flex-1 min-w-0">
+      <!-- Top bar -->
+      <header class="border-b border-white/10 bg-slate-950/60 backdrop-blur-xl">
+        <div class="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
+          <div>
+            <div class="text-xl font-bold">CSV Insight Bot</div>
+            <div class="text-sm text-slate-400">AI-powered dataset analysis and chat</div>
+          </div>
+
+          {% if file_id %}
+          <div class="md:hidden">
+            <a href="/overview/{{ file_id }}"
+               class="px-4 py-2 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-sm font-semibold text-white">
+              Dashboard
+            </a>
+          </div>
+          {% else %}
+          <div>
+            <a href="/"
+               class="px-4 py-2 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-sm font-semibold text-white">
+              Home
+            </a>
+          </div>
+          {% endif %}
+        </div>
+      </header>
+
+      <!-- Content -->
+      <main class="max-w-7xl mx-auto px-6 py-8">
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+  </div>
+</body>
+</html>

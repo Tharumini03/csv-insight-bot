@@ -1,6 +1,7 @@
 import os
 import uuid
 import json
+import threading
 import pandas as pd
 
 from app.agents.schema_agent import detect_schema
@@ -107,22 +108,23 @@ def analyze(
     # Build downloadable report text
     report_text = build_text_report(schema, cleaning_report, model_info, insight, target)
 
-    # Build RAG knowledge file
-    knowledge_path = build_knowledge_file(
-        file_id,
-        schema,
-        cleaning_report,
-        model_info,
-        feature_importance,
-        insight
-    )
-    print("Knowledge file created:", knowledge_path)
+    # Build RAG index in background so it doesn't block the response
+    def build_rag(fid, s, cr, mi, fi, ins):
+        try:
+            kp = build_knowledge_file(fid, s, cr, mi, fi, ins)
+            print("Knowledge file created:", kp)
+            cp = build_chunks_file(fid, kp)
+            print("Chunks file created:", cp)
+            fp = build_faiss_index(fid, cp)
+            print("FAISS index created:", fp)
+        except Exception as e:
+            print(f"RAG build failed (chat will be unavailable): {e}")
 
-    chunks_path = build_chunks_file(file_id, knowledge_path)
-    print("Chunks file created:", chunks_path)
-
-    faiss_path = build_faiss_index(file_id, chunks_path)
-    print("FAISS index created:", faiss_path)
+    threading.Thread(
+        target=build_rag,
+        args=(file_id, schema, cleaning_report, model_info, feature_importance, insight),
+        daemon=True
+    ).start()
 
     # Save report
     output_folder = os.path.join(OUTPUT_DIR, file_id)
