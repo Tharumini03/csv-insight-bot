@@ -24,8 +24,6 @@ env/
 # Storage (runtime files — not committed)
 app/storage/uploads/
 app/storage/outputs/
-!app/storage/uploads/.gitkeep
-!app/storage/outputs/.gitkeep
 
 # macOS
 .DS_Store
