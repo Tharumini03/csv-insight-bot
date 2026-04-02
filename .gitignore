@@ -1,37 +1,8 @@
 
-
-# Python
-__pycache__/
-*.py[cod]
-*.pyo
-*.pyd
-.Python
-*.egg-info/
-dist/
-build/
-.eggs/
-*.egg
-
-# Virtual environments
-venv/
 .venv/
-env/
-
-# Environment variables
-.env
-.env.local
-
-# Storage (runtime files — not committed)
+__pycache__/
 app/storage/uploads/
 app/storage/outputs/
-
-# macOS
+storage/
+.env
 .DS_Store
-**/.DS_Store
-
-# IDEs
-.vscode/
-.idea/
-
-# Logs
-*.log
