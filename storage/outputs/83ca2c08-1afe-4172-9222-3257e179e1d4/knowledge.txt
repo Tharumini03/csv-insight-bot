@@ -1,0 +1,21 @@
+DATASET SUMMARY
+{'rows': 270000, 'cols': 14, 'numeric_cols': ['id', 'Age', 'Sex', 'Chest pain type', 'BP', 'Cholesterol', 'FBS over 120', 'EKG results', 'Max HR', 'Exercise angina', 'ST depression', 'Slope of ST', 'Number of vessels fluro', 'Thallium'], 'categorical_cols': [], 'missing_top': {}, 'total_missing_cells': 0, 'numeric_summary': {'id': {'min': 630000.0, 'max': 899999.0, 'mean': 764999.5}, 'Age': {'min': 29.0, 'max': 77.0, 'mean': 54.15987037037037}, 'Sex': {'min': 0.0, 'max': 1.0, 'mean': 0.7163148148148148}, 'Chest pain type': {'min': 1.0, 'max': 4.0, 'mean': 3.3151074074074076}, 'BP': {'min': 94.0, 'max': 200.0, 'mean': 130.5550888888889}, 'Cholesterol': {'min': 126.0, 'max': 564.0, 'mean': 245.04527037037036}, 'FBS over 120': {'min': 0.0, 'max': 1.0, 'mean': 0.08005185185185185}, 'EKG results': {'min': 0.0, 'max': 2.0, 'mean': 0.9784925925925926}, 'Max HR': {'min': 71.0, 'max': 202.0, 'mean': 152.78375555555556}, 'Exercise angina': {'min': 0.0, 'max': 1.0, 'mean': 0.27465555555555554}, 'ST depression': {'min': 0.0, 'max': 6.2, 'mean': 0.718082}, 'Slope of ST': {'min': 1.0, 'max': 3.0, 'mean': 1.4593555555555555}, 'Number of vessels fluro': {'min': 0.0, 'max': 3.0, 'mean': 0.4548}, 'Thallium': {'min': 3.0, 'max': 7.0, 'mean': 4.6197740740740745}}}
+
+CLEANING REPORT
+{'dropped_empty_columns': [], 'dropped_rows_missing_target': 0, 'filled_columns': {}, 'before_shape': {'rows': 270000, 'cols': 14}, 'after_shape': {'rows': 270000, 'cols': 14}, 'total_missing_after': 0}
+
+MODEL INFORMATION
+{'problem_type': 'Regression', 'model_used': 'RandomForestRegressor', 'metric': 'R²', 'score': -0.03189281575046987, 'train_rows': 216000, 'test_rows': 54000, 'num_features': 13, 'cat_features': 0, 'feature_importance': []}
+
+FEATURE IMPORTANCE
+[]
+
+INSIGHTS
+
+The model achieved an accuracy of -0.032.
+
+The most important features influencing the prediction appear to be
+.
+
+This suggests these variables have the strongest relationship with the target outcome.
+

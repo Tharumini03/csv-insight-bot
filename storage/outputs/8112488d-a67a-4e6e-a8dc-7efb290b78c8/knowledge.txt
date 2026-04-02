@@ -1,0 +1,21 @@
+DATASET SUMMARY
+{'rows': 630000, 'cols': 15, 'numeric_cols': ['id', 'Age', 'Sex', 'Chest pain type', 'BP', 'Cholesterol', 'FBS over 120', 'EKG results', 'Max HR', 'Exercise angina', 'ST depression', 'Slope of ST', 'Number of vessels fluro', 'Thallium'], 'categorical_cols': ['Heart Disease'], 'missing_top': {}, 'total_missing_cells': 0, 'numeric_summary': {'id': {'min': 0.0, 'max': 629999.0, 'mean': 314999.5}, 'Age': {'min': 29.0, 'max': 77.0, 'mean': 54.13670634920635}, 'Sex': {'min': 0.0, 'max': 1.0, 'mean': 0.7147349206349206}, 'Chest pain type': {'min': 1.0, 'max': 4.0, 'mean': 3.312752380952381}, 'BP': {'min': 94.0, 'max': 200.0, 'mean': 130.49743333333333}, 'Cholesterol': {'min': 126.0, 'max': 564.0, 'mean': 245.01181428571428}, 'FBS over 120': {'min': 0.0, 'max': 1.0, 'mean': 0.07998730158730159}, 'EKG results': {'min': 0.0, 'max': 2.0, 'mean': 0.9816603174603175}, 'Max HR': {'min': 71.0, 'max': 202.0, 'mean': 152.8167634920635}, 'Exercise angina': {'min': 0.0, 'max': 1.0, 'mean': 0.2737253968253968}, 'ST depression': {'min': 0.0, 'max': 6.2, 'mean': 0.7160275555555555}, 'Slope of ST': {'min': 1.0, 'max': 3.0, 'mean': 1.4558714285714285}, 'Number of vessels fluro': {'min': 0.0, 'max': 3.0, 'mean': 0.4510396825396825}, 'Thallium': {'min': 3.0, 'max': 7.0, 'mean': 4.618873015873016}}}
+
+CLEANING REPORT
+{'dropped_empty_columns': [], 'dropped_rows_missing_target': 0, 'filled_columns': {}, 'before_shape': {'rows': 630000, 'cols': 15}, 'after_shape': {'rows': 630000, 'cols': 15}, 'total_missing_after': 0}
+
+MODEL INFORMATION
+{'problem_type': 'Regression', 'model_used': 'RandomForestRegressor', 'metric': 'R²', 'score': -0.03442525447252853, 'train_rows': 504000, 'test_rows': 126000, 'num_features': 13, 'cat_features': 1, 'feature_importance': [('Sex', np.float64(0.3253192908250839)), ('Chest pain type', np.float64(0.15212902357788866)), ('ST depression', np.float64(0.14624283111969555)), ('EKG results', np.float64(0.11705102238768954)), ('Number of vessels fluro', np.float64(0.08438163082163108)), ('FBS over 120', np.float64(0.03964247025542828)), ('Thallium', np.float64(0.02900185497250947)), ('Exercise angina', np.float64(0.024466869091241843)), ('Heart Disease_Absence', np.float64(0.02064594769316775)), ('BP', np.float64(0.01676497758745882))]}
+
+FEATURE IMPORTANCE
+[('Sex', np.float64(0.3253192908250839)), ('Chest pain type', np.float64(0.15212902357788866)), ('ST depression', np.float64(0.14624283111969555)), ('EKG results', np.float64(0.11705102238768954)), ('Number of vessels fluro', np.float64(0.08438163082163108)), ('FBS over 120', np.float64(0.03964247025542828)), ('Thallium', np.float64(0.02900185497250947)), ('Exercise angina', np.float64(0.024466869091241843)), ('Heart Disease_Absence', np.float64(0.02064594769316775)), ('BP', np.float64(0.01676497758745882))]
+
+INSIGHTS
+
+The model achieved an accuracy of -0.034.
+
+The most important features influencing the prediction appear to be
+Sex, Chest pain type, ST depression.
+
+This suggests these variables have the strongest relationship with the target outcome.
+

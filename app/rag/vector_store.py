@@ -5,14 +5,11 @@ import faiss
 import numpy as np
 import requests
 
-OLLAMA_BASE_URL = "http://127.0.0.1:11434"
-OLLAMA_EMBED_MODEL = "embeddinggemma"
+OLLAMA_BASE_URL = os.environ.get("OLLAMA_BASE_URL", "http://127.0.0.1:11434")
+OLLAMA_EMBED_MODEL = os.environ.get("OLLAMA_EMBED_MODEL", "embeddinggemma")
 
 
 def get_ollama_embeddings(texts):
-    """
-    Generate embeddings using Ollama's /api/embed endpoint.
-    """
     response = requests.post(
         f"{OLLAMA_BASE_URL}/api/embed",
         json={
@@ -22,15 +19,11 @@ def get_ollama_embeddings(texts):
         timeout=120
     )
     response.raise_for_status()
-
     data = response.json()
     return np.array(data["embeddings"], dtype="float32")
 
 
 def build_faiss_index(file_id: str, chunks_path: str):
-    """
-    Build FAISS index from chunks.json and save it.
-    """
     output_dir = f"app/storage/outputs/{file_id}/faiss_store"
     os.makedirs(output_dir, exist_ok=True)
 
@@ -53,13 +46,12 @@ def build_faiss_index(file_id: str, chunks_path: str):
 
 
 def search_faiss(file_id: str, query: str, top_k: int = 3):
-    """
-    Search the FAISS index using the query embedding.
-    """
     store_dir = f"app/storage/outputs/{file_id}/faiss_store"
-
     index_path = os.path.join(store_dir, "index.faiss")
     chunks_path = os.path.join(store_dir, "chunks.pkl")
+
+    if not os.path.exists(index_path):
+        return []
 
     index = faiss.read_index(index_path)
 
@@ -67,7 +59,6 @@ def search_faiss(file_id: str, query: str, top_k: int = 3):
         chunks = pickle.load(f)
 
     query_embedding = get_ollama_embeddings([query])
-
     distances, indices = index.search(query_embedding, top_k)
 
     results = []

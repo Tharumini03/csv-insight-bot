@@ -1,0 +1,21 @@
+DATASET SUMMARY
+{'rows': 891, 'cols': 12, 'numeric_cols': ['PassengerId', 'Survived', 'Pclass', 'Age', 'SibSp', 'Parch', 'Fare'], 'categorical_cols': ['Name', 'Sex', 'Ticket', 'Cabin', 'Embarked'], 'missing_top': {'Cabin': 687, 'Age': 177, 'Embarked': 2}, 'total_missing_cells': 866, 'numeric_summary': {'PassengerId': {'min': 1.0, 'max': 891.0, 'mean': 446.0}, 'Survived': {'min': 0.0, 'max': 1.0, 'mean': 0.3838383838383838}, 'Pclass': {'min': 1.0, 'max': 3.0, 'mean': 2.308641975308642}, 'Age': {'min': 0.42, 'max': 80.0, 'mean': 29.69911764705882}, 'SibSp': {'min': 0.0, 'max': 8.0, 'mean': 0.5230078563411896}, 'Parch': {'min': 0.0, 'max': 6.0, 'mean': 0.38159371492704824}, 'Fare': {'min': 0.0, 'max': 512.3292, 'mean': 32.204207968574636}}}
+
+CLEANING REPORT
+{'dropped_empty_columns': [], 'dropped_rows_missing_target': 0, 'filled_columns': {'Age': {'missing_filled': 177, 'method': 'median'}, 'Cabin': {'missing_filled': 687, 'method': 'mode/Unknown'}, 'Embarked': {'missing_filled': 2, 'method': 'mode/Unknown'}}, 'before_shape': {'rows': 891, 'cols': 12}, 'after_shape': {'rows': 891, 'cols': 12}, 'total_missing_after': 0}
+
+MODEL INFORMATION
+{'problem_type': 'Classification', 'model_used': 'RandomForestClassifier', 'metric': 'Accuracy', 'score': 0.8044692737430168, 'train_rows': 712, 'test_rows': 179, 'num_features': 6, 'cat_features': 5, 'feature_importance': [('Name_de Messemaeker, Mrs. Guillaume Joseph (Emma)', np.float64(0.10315048278770494)), ('Name_Zabour, Miss. Thamine', np.float64(0.10021337330528325)), ('Embarked_S', np.float64(0.058458522708816116)), ('Cabin_T', np.float64(0.049969849369862505)), ('Cabin_F4', np.float64(0.045728410568327424)), ('Cabin_G6', np.float64(0.03893697063541535)), ('Cabin_B73', np.float64(0.02399421247202987)), ('Embarked_C', np.float64(0.01952192827187423)), ('Embarked_Q', np.float64(0.0159338102553925)), ('Cabin_F38', np.float64(0.008664422152384915))]}
+
+FEATURE IMPORTANCE
+[('Name_de Messemaeker, Mrs. Guillaume Joseph (Emma)', np.float64(0.10315048278770494)), ('Name_Zabour, Miss. Thamine', np.float64(0.10021337330528325)), ('Embarked_S', np.float64(0.058458522708816116)), ('Cabin_T', np.float64(0.049969849369862505)), ('Cabin_F4', np.float64(0.045728410568327424)), ('Cabin_G6', np.float64(0.03893697063541535)), ('Cabin_B73', np.float64(0.02399421247202987)), ('Embarked_C', np.float64(0.01952192827187423)), ('Embarked_Q', np.float64(0.0159338102553925)), ('Cabin_F38', np.float64(0.008664422152384915))]
+
+INSIGHTS
+
+The model achieved an accuracy of 0.804.
+
+The most important features influencing the prediction appear to be
+Name_de Messemaeker, Mrs. Guillaume Joseph (Emma), Name_Zabour, Miss. Thamine, Embarked_S.
+
+This suggests these variables have the strongest relationship with the target outcome.
+

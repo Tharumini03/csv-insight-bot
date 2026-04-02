@@ -1,0 +1,21 @@
+DATASET SUMMARY
+{'rows': 418, 'cols': 11, 'numeric_cols': ['PassengerId', 'Pclass', 'Age', 'SibSp', 'Parch', 'Fare'], 'categorical_cols': ['Name', 'Sex', 'Ticket', 'Cabin', 'Embarked'], 'missing_top': {'Cabin': 327, 'Age': 86, 'Fare': 1}, 'total_missing_cells': 414, 'numeric_summary': {'PassengerId': {'min': 892.0, 'max': 1309.0, 'mean': 1100.5}, 'Pclass': {'min': 1.0, 'max': 3.0, 'mean': 2.2655502392344498}, 'Age': {'min': 0.17, 'max': 76.0, 'mean': 30.272590361445783}, 'SibSp': {'min': 0.0, 'max': 8.0, 'mean': 0.4473684210526316}, 'Parch': {'min': 0.0, 'max': 9.0, 'mean': 0.3923444976076555}, 'Fare': {'min': 0.0, 'max': 512.3292, 'mean': 35.627188489208635}}}
+
+CLEANING REPORT
+{'dropped_empty_columns': [], 'dropped_rows_missing_target': 0, 'filled_columns': {'Age': {'missing_filled': 86, 'method': 'median'}, 'Fare': {'missing_filled': 1, 'method': 'median'}, 'Cabin': {'missing_filled': 327, 'method': 'mode/Unknown'}}, 'before_shape': {'rows': 418, 'cols': 11}, 'after_shape': {'rows': 418, 'cols': 11}, 'total_missing_after': 0}
+
+MODEL INFORMATION
+{'problem_type': 'Classification', 'model_used': 'RandomForestClassifier', 'metric': 'Accuracy', 'score': 0.03571428571428571, 'train_rows': 334, 'test_rows': 84, 'num_features': 6, 'cat_features': 4, 'feature_importance': [('Embarked_S', np.float64(0.07217661519625787)), ('Cabin_F2', np.float64(0.06777556984404705)), ('Cabin_G6', np.float64(0.05909257226454617)), ('Embarked_C', np.float64(0.029114519050070658)), ('Embarked_Q', np.float64(0.02363218323360269)), ('Cabin_F4', np.float64(0.021480311264257354)), ('Name_Zakarian, Mr. Ortin', np.float64(0.012329658460357265)), ('Name_Zakarian, Mr. Mapriededer', np.float64(0.011238266659019986)), ('Cabin_F E46', np.float64(0.010518298599258244)), ('Cabin_B26', np.float64(0.01049378377704958))]}
+
+FEATURE IMPORTANCE
+[('Embarked_S', np.float64(0.07217661519625787)), ('Cabin_F2', np.float64(0.06777556984404705)), ('Cabin_G6', np.float64(0.05909257226454617)), ('Embarked_C', np.float64(0.029114519050070658)), ('Embarked_Q', np.float64(0.02363218323360269)), ('Cabin_F4', np.float64(0.021480311264257354)), ('Name_Zakarian, Mr. Ortin', np.float64(0.012329658460357265)), ('Name_Zakarian, Mr. Mapriededer', np.float64(0.011238266659019986)), ('Cabin_F E46', np.float64(0.010518298599258244)), ('Cabin_B26', np.float64(0.01049378377704958))]
+
+INSIGHTS
+
+The model achieved an accuracy of 0.036.
+
+The most important features influencing the prediction appear to be
+Embarked_S, Cabin_F2, Cabin_G6.
+
+This suggests these variables have the strongest relationship with the target outcome.
+

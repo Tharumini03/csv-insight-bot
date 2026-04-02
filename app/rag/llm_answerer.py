@@ -1,7 +1,8 @@
+import os
 import requests
 
-OLLAMA_BASE_URL = "http://127.0.0.1:11434"
-OLLAMA_CHAT_MODEL = "gemma3"
+OLLAMA_BASE_URL = os.environ.get("OLLAMA_BASE_URL", "http://127.0.0.1:11434")
+OLLAMA_CHAT_MODEL = os.environ.get("OLLAMA_CHAT_MODEL", "gemma3")
 
 
 def generate_grounded_answer(question: str, retrieved_chunks: list, history=None):
@@ -54,8 +55,10 @@ Use only chunk IDs that were actually provided.
         "stream": False
     }
 
-    response = requests.post(f"{OLLAMA_BASE_URL}/api/chat", json=payload, timeout=120)
-    response.raise_for_status()
-
-    data = response.json()
-    return data["message"]["content"]
+    try:
+        response = requests.post(f"{OLLAMA_BASE_URL}/api/chat", json=payload, timeout=120)
+        response.raise_for_status()
+        data = response.json()
+        return data["message"]["content"]
+    except Exception as e:
+        return f"Chat is currently unavailable (Ollama not reachable): {str(e)}"
